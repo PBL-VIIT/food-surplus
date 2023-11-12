@@ -18,7 +18,7 @@ export default function DoneeLogin() {
 
                             <CustomeInput placeholder={"••••••••"} id={"password"} type={"password"} />
 
-                            <MainButton to={"/donor/dashboard/"} text={'Create a Donee account'} />
+                            <MainButton to={'/donee/dashboard/'} text={'Create a Donee account'} />
 
 
 

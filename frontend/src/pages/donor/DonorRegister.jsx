@@ -19,7 +19,7 @@ export default function DonorRegister() {
 
                             <CustomeInput placeholder={"••••••••"} id={"password"} type={"password"} />
 
-                            <MainButton text={'Create a Donor account'} />
+                            <MainButton to={'/donor/dashboard/'} text={'Create a Donor account'} />
 
 
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">

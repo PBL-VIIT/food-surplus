@@ -19,7 +19,7 @@ export default function DoneeRegister() {
 
                             <CustomeInput placeholder={"••••••••"} id={"password"} type={"password"} />
 
-                            <MainButton text={'Create a Donee account'} />
+                            <MainButton to={'/donee/dashboard/'} text={'Create a Donee account'} />
 
 
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">

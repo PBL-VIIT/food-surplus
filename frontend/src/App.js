@@ -11,6 +11,8 @@ import DoneeDashboard from "./pages/donee/DoneeDashboard";
 import DonorDashboard from "./pages/donor/DonorDashboard";
 import DonationDetails from "./pages/donor/DonationDetails";
 import DonorProfile from "./pages/donor/DonorProfile";
+import AvailbaleDonations from "./pages/donee/AvailbaleDonations";
+import NewDonation from "./pages/donor/NewDonation";
 
 
 function App() {
@@ -34,6 +36,8 @@ function App() {
           </Route>
           <Route path="/donor/dashboard/donationDetails" element={<DonationDetails />} />
           <Route path="/donor/dashboard/donorProfile" element={<DonorProfile />} />
+          <Route path="/donor/newDonation" element={<NewDonation />} />
+          <Route path="/donee/dashboard/dry_fruits" element={<AvailbaleDonations />} />
 
         </Routes>
       </Router>

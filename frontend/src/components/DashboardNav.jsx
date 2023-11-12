@@ -7,7 +7,7 @@ export default function DashboardNav() {
     return (
 
 
-        <nav className="bg-white fixed w-screen border-gray-200 dark:bg-gray-900 px-10 shadow-lg">
+        <nav className="bg-white fixed w-screen border-gray-200 dark:bg-gray-900 px-10 shadow-lg z-10">
             <div className=" flex flex-wrap items-center justify-between mx-auto p-4 ">
                 <Link to={'/'} className="flex items-center space-x-3 rtl:space-x-reverse">
                     <Logo width={50} height={50} />
