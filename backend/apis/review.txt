@@ -1,0 +1,50 @@
+add column
+
+-- Alter Table to Add email and password Columns
+ALTER TABLE Donor
+ADD COLUMN email VARCHAR(255) UNIQUE NOT NULL,
+ADD COLUMN password VARCHAR(255) NOT NULL;
+
+
+---------------------------------------------------------
+
+const express = require('express');
+const app = express();
+const con = require('./config');
+
+app.use(express.json());
+
+// 1. Add Review
+app.post('/api/reviews', async (req, res) => {
+    try {
+        const { doneeId, donorId, reviewTitle, reviewDescription, rating } = req.body;
+
+        const addReviewQuery = 'INSERT INTO Review (doneeId, donorId, reviewTitle, reviewDescription, rating) VALUES (?, ?, ?, ?, ?)';
+        const addReviewResult = await con.query(addReviewQuery, [doneeId, donorId, reviewTitle, reviewDescription, rating]);
+
+        const reviewId = addReviewResult.insertId;
+        res.status(201).json({ message: 'Review added successfully', reviewId });
+    } catch (error) {
+        console.error('Error adding review:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 2. Get All Reviews by Donor ID
+app.get('/api/reviews/donor/:id', async (req, res) => {
+    try {
+        const donorId = req.params.id;
+
+        const getReviewsQuery = 'SELECT * FROM Review WHERE donorId = ?';
+        const reviews = await con.query(getReviewsQuery, [donorId]);
+
+        res.json(reviews);
+    } catch (error) {
+        console.error('Error getting reviews by donor ID:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.listen(5000, () => {
+    console.log("Listening on port 5000");
+});

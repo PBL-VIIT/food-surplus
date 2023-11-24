@@ -1,0 +1,40 @@
+const express = require('express');
+const app = express();
+const con = require('./config');
+
+app.use(express.json());
+
+// 1. Add Feedback
+app.post('/api/feedbacks', async (req, res) => {
+    try {
+        const { donationId, feedbackTitle, feedbackDescription, doneeId } = req.body;
+
+        const addFeedbackQuery = 'INSERT INTO Feedback (donationId, feedbackTitle, feedbackDescription, doneeId) VALUES (?, ?, ?, ?)';
+        const addFeedbackResult = await con.query(addFeedbackQuery, [donationId, feedbackTitle, feedbackDescription, doneeId]);
+
+        const feedbackId = addFeedbackResult.insertId;
+        res.status(201).json({ message: 'Feedback added successfully', feedbackId });
+    } catch (error) {
+        console.error('Error adding feedback:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 2. Get All Feedback from Donation ID
+app.get('/api/feedbacks/donation/:id', async (req, res) => {
+    try {
+        const donationId = req.params.id;
+
+        const getFeedbacksQuery = 'SELECT * FROM Feedback WHERE donationId = ?';
+        const feedbacks = await con.query(getFeedbacksQuery, [donationId]);
+
+        res.json(feedbacks);
+    } catch (error) {
+        console.error('Error getting feedbacks from donation ID:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.listen(5000, () => {
+    console.log("Listening on port 5000");
+});

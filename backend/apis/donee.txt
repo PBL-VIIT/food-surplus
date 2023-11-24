@@ -1,0 +1,126 @@
+add column
+
+-- Alter Table to Add email and password Columns
+ALTER TABLE Donee
+ADD COLUMN email VARCHAR(255) UNIQUE NOT NULL,
+ADD COLUMN password VARCHAR(255) NOT NULL;
+
+
+---------------------------------------------------------
+
+const express = require('express');
+const app = express();
+const con = require('./config');
+const bcrypt = require('bcrypt');
+
+app.use(express.json());
+
+// 1. Register Donee
+app.post('/api/donees/register', async (req, res) => {
+    try {
+        const { doneeName, latitude, longitude, geohash, email, password } = req.body;
+
+        // Check if the email already exists
+        const emailExistsQuery = 'SELECT * FROM Donee WHERE email = ?';
+        const emailExistsResult = await con.query(emailExistsQuery, [email]);
+
+        if (emailExistsResult.length > 0) {
+            return res.status(400).json({ error: 'Email already registered' });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Insert new donee
+        const insertDoneeQuery = 'INSERT INTO Donee (doneeName, latitude, longitude, geohash, email, password) VALUES (?, ?, ?, ?, ?, ?)';
+        const insertDoneeResult = await con.query(insertDoneeQuery, [doneeName, latitude, longitude, geohash, email, hashedPassword]);
+
+        const doneeId = insertDoneeResult.insertId;
+        res.status(201).json({ message: 'Donee registered successfully', doneeId });
+    } catch (error) {
+        console.error('Error registering donee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 2. Login Donee
+app.post('/api/donees/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Check if the email exists
+        const checkEmailQuery = 'SELECT * FROM Donee WHERE email = ?';
+        const donee = await con.query(checkEmailQuery, [email]);
+
+        if (donee.length === 0) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+
+        // Compare the provided password with the hashed password from the database
+        const passwordMatch = await bcrypt.compare(password, donee[0].password);
+
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+
+        res.json({ message: 'Login successful' });
+    } catch (error) {
+        console.error('Error logging in donee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 3. Get Donee Details by Donee ID
+app.get('/api/donees/:id', async (req, res) => {
+    try {
+        const doneeId = req.params.id;
+        const getDoneeQuery = 'SELECT * FROM Donee WHERE doneeId = ?';
+        const donees = await con.query(getDoneeQuery, [doneeId]);
+
+        if (donees.length === 0) {
+            return res.status(404).json({ error: 'Donee not found' });
+        }
+
+        res.json(donees[0]);
+    } catch (error) {
+        console.error('Error getting donee details:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 4. Get All Donees Details
+app.get('/api/donees', async (req, res) => {
+    try {
+        const getAllDoneesQuery = 'SELECT * FROM Donee';
+        const donees = await con.query(getAllDoneesQuery);
+
+        res.json(donees);
+    } catch (error) {
+        console.error('Error getting all donees:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 5. Update Donee Details by Donee ID
+app.put('/api/donees/:id', async (req, res) => {
+    try {
+        const doneeId = req.params.id;
+        const { doneeName, latitude, longitude, geohash } = req.body;
+
+        const updateDoneeQuery = 'UPDATE Donee SET doneeName = ?, latitude = ?, longitude = ?, geohash = ? WHERE doneeId = ?';
+        const updateDoneeResult = await con.query(updateDoneeQuery, [doneeName, latitude, longitude, geohash, doneeId]);
+
+        if (updateDoneeResult.affectedRows === 0) {
+            return res.status(404).json({ error: 'Donee not found' });
+        }
+
+        res.json({ message: 'Donee updated successfully' });
+    } catch (error) {
+        console.error('Error updating donee details:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.listen(5000, () => {
+    console.log("Listening on port 5000");
+});

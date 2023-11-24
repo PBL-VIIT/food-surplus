@@ -1,0 +1,96 @@
+const express = require('express');
+const app = express();
+const con = require('./config');
+
+app.use(express.json());
+
+// 1. Add Donation
+app.post('/api/donations', async (req, res) => {
+    try {
+        const { donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash } = req.body;
+
+        const addDonationQuery = 'INSERT INTO Donation (donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const addDonationResult = await con.query(addDonationQuery, [donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash]);
+
+        const donationId = addDonationResult.insertId;
+        res.status(201).json({ message: 'Donation added successfully', donationId });
+    } catch (error) {
+        console.error('Error adding donation:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 2. Delete Donation
+app.delete('/api/donations/:id', async (req, res) => {
+    try {
+        const donationId = req.params.id;
+
+        const deleteDonationQuery = 'DELETE FROM Donation WHERE donationId = ?';
+        const deleteDonationResult = await con.query(deleteDonationQuery, [donationId]);
+
+        if (deleteDonationResult.affectedRows === 0) {
+            return res.status(404).json({ error: 'Donation not found' });
+        }
+
+        res.json({ message: 'Donation deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting donation:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 3. Update Donation
+app.put('/api/donations/:id', async (req, res) => {
+    try {
+        const donationId = req.params.id;
+        const { donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash } = req.body;
+
+        const updateDonationQuery = 'UPDATE Donation SET donorId = ?, donationName = ?, donationType = ?, noOfDonations = ?, donationDescription = ?, donationExpiry = ?, donationPickupLatitude = ?, donationPickupLongitude = ?, donationPickupGeohash = ? WHERE donationId = ?';
+        const updateDonationResult = await con.query(updateDonationQuery, [donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash, donationId]);
+
+        if (updateDonationResult.affectedRows === 0) {
+            return res.status(404).json({ error: 'Donation not found' });
+        }
+
+        res.json({ message: 'Donation updated successfully' });
+    } catch (error) {
+        console.error('Error updating donation:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 4. Get Single Donation
+app.get('/api/donations/:id', async (req, res) => {
+    try {
+        const donationId = req.params.id;
+
+        const getDonationQuery = 'SELECT * FROM Donation WHERE donationId = ?';
+        const donations = await con.query(getDonationQuery, [donationId]);
+
+        if (donations.length === 0) {
+            return res.status(404).json({ error: 'Donation not found' });
+        }
+
+        res.json(donations[0]);
+    } catch (error) {
+        console.error('Error getting donation details:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 5. Get All Donations
+app.get('/api/donations', async (req, res) => {
+    try {
+        const getAllDonationsQuery = 'SELECT * FROM Donation';
+        const donations = await con.query(getAllDonationsQuery);
+
+        res.json(donations);
+    } catch (error) {
+        console.error('Error getting all donations:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.listen(5000, () => {
+    console.log("Listening on port 5000");
+});

@@ -1,0 +1,126 @@
+add column
+
+-- Alter Table to Add email and password Columns
+ALTER TABLE Donor
+ADD COLUMN email VARCHAR(255) UNIQUE NOT NULL,
+ADD COLUMN password VARCHAR(255) NOT NULL;
+
+
+---------------------------------------------------------
+
+const express = require('express');
+const app = express();
+const con = require('./config');
+const bcrypt = require('bcrypt');
+
+app.use(express.json());
+
+// 1. Register Donor
+app.post('/api/donors/register', async (req, res) => {
+    try {
+        const { name, orgName, email, password, latitude, longitude, geohash, avgRatings } = req.body;
+
+        // Check if the email already exists
+        const emailExistsQuery = 'SELECT * FROM Donor WHERE email = ?';
+        const emailExistsResult = await con.query(emailExistsQuery, [email]);
+
+        if (emailExistsResult.length > 0) {
+            return res.status(400).json({ error: 'Email already registered' });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Insert new donor
+        const insertDonorQuery = 'INSERT INTO Donor (name, orgName, email, password, latitude, longitude, geohash, avgRatings) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        const insertDonorResult = await con.query(insertDonorQuery, [name, orgName, email, hashedPassword, latitude, longitude, geohash, avgRatings]);
+
+        const donorId = insertDonorResult.insertId;
+        res.status(201).json({ message: 'Donor registered successfully', donorId });
+    } catch (error) {
+        console.error('Error registering donor:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 2. Login Donor
+app.post('/api/donors/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Check if the email exists
+        const checkEmailQuery = 'SELECT * FROM Donor WHERE email = ?';
+        const donor = await con.query(checkEmailQuery, [email]);
+
+        if (donor.length === 0) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+
+        // Compare the provided password with the hashed password from the database
+        const passwordMatch = await bcrypt.compare(password, donor[0].password);
+
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+
+        res.json({ message: 'Login successful' });
+    } catch (error) {
+        console.error('Error logging in donor:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 3. Get Donor Details by Donor ID
+app.get('/api/donors/:id', async (req, res) => {
+    try {
+        const donorId = req.params.id;
+        const getDonorQuery = 'SELECT * FROM Donor WHERE donorId = ?';
+        const donors = await con.query(getDonorQuery, [donorId]);
+
+        if (donors.length === 0) {
+            return res.status(404).json({ error: 'Donor not found' });
+        }
+
+        res.json(donors[0]);
+    } catch (error) {
+        console.error('Error getting donor details:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 4. Get All Donors Details
+app.get('/api/donors', async (req, res) => {
+    try {
+        const getAllDonorsQuery = 'SELECT * FROM Donor';
+        const donors = await con.query(getAllDonorsQuery);
+
+        res.json(donors);
+    } catch (error) {
+        console.error('Error getting all donors:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// 5. Update Donor Details by Donor ID
+app.put('/api/donors/:id', async (req, res) => {
+    try {
+        const donorId = req.params.id;
+        const { name, orgName, latitude, longitude, geohash, avgRatings } = req.body;
+
+        const updateDonorQuery = 'UPDATE Donor SET name = ?, orgName = ?, latitude = ?, longitude = ?, geohash = ?, avgRatings = ? WHERE donorId = ?';
+        const updateDonorResult = await con.query(updateDonorQuery, [name, orgName, latitude, longitude, geohash, avgRatings, donorId]);
+
+        if (updateDonorResult.affectedRows === 0) {
+            return res.status(404).json({ error: 'Donor not found' });
+        }
+
+        res.json({ message: 'Donor updated successfully' });
+    } catch (error) {
+        console.error('Error updating donor details:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.listen(5000, () => {
+    console.log("Listening on port 5000");
+});
