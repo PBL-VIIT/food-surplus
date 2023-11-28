@@ -34,7 +34,7 @@ function App() {
           <Route path='/donor/dashboard' element={<DonorDashboard />} >
 
           </Route>
-          <Route path="/donor/dashboard/donationDetails" element={<DonationDetails />} />
+          <Route path="/donor/dashboard/donationDetails/:donationId" element={<DonationDetails />} />
           <Route path="/donor/dashboard/donorProfile" element={<DonorProfile />} />
           <Route path="/donor/newDonation" element={<NewDonation />} />
           <Route path="/donee/dashboard/dry_fruits" element={<AvailbaleDonations />} />

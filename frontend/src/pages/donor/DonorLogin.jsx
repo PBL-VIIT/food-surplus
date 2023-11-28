@@ -1,9 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import MainButton from '../../components/utility/MainButton'
 import CustomeInput from '../../components/utility/CustomeInput'
 import { Link } from 'react-router-dom'
 
 export default function DonorLogin() {
+
+
+    const [email, setEmail] = useState()
+    const [password, setPassword] = useState()
+
+
+    const handleDonorLogin = () => {
+        console.log(email, password);
+    }
+
     return (
         <section className="bg-gray-50 dark:bg-gray-900">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -14,13 +24,13 @@ export default function DonorLogin() {
                             Welcome back !
                         </h1>
                         <form className="space-y-4 md:space-y-6" action="#">
-                            <CustomeInput placeholder={"Your email"} id={"email"} type={"email"} />
+                            <CustomeInput value={email} setValue={setEmail} placeholder={"Your email"} id={"email"} type={"email"} />
 
-                            <CustomeInput placeholder={"••••••••"} id={"password"} type={"password"} />
+                            <CustomeInput value={password} setValue={setPassword} placeholder={"••••••••"} id={"password"} type={"password"} />
 
 
 
-                            <MainButton to={'/donor/dashboard/'} text={'Login as Donor'} />
+                            <MainButton onClick={handleDonorLogin} to={'/donor/dashboard/'} text={'Login as Donor'} />
 
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                                 Don't have an account? <Link to={'/donor_register'} className="font-medium text-primary-600 hover:underline dark:text-primary-500">Register here</Link>

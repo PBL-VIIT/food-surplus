@@ -1,14 +1,43 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import DashboardNav from '../../components/DashboardNav'
 import ReviewCard from '../../components/ReviewCard'
+import { useParams, } from 'react-router-dom'
+import toast, { Toaster } from 'react-hot-toast'
+import { getSingleDonation } from '../../api/donation'
+import { getFeedbackByDonation } from '../../api/feedback'
 
 export default function DonationDetails() {
+
+    let { donationId } = useParams()
+
+    const [donationDetails, setDonationDetails] = useState()
+    const [feedbacks, setFeedbacks] = useState()
+
+    useEffect(() => {
+        const getDonation = async () => {
+
+            let res = await getSingleDonation(donationId)
+            let feedback = await getFeedbackByDonation(donationId)
+
+            console.log(res);
+            setDonationDetails(res.data)
+            toast.success(" Donation's details fetched successfully")
+            setFeedbacks(feedback.data)
+            toast.success(" Feedbacks fetched successfully")
+        }
+        getDonation()
+
+    }, [])
+
+
+
     return (
         <div>
             <DashboardNav />
+            <Toaster />
             <div className="px-16 py-10 pt-32 w-4/5">
-                <h1 className='px-2 font-bold text-3xl outline-blue-100' contentEditable>Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit similique molestias sint!</h1>
-                <p className='px-2 text-gray-800 outline-blue-100 mt-4' contentEditable>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maxime eum nihil ab libero vitae dolorem doloremque, temporibus culpa dolores delectus veniam expedita dolor et id dolorum sequi pariatur eos illum porro blanditiis!</p>
+                <h1 className='px-2 font-bold text-3xl outline-blue-100' >{donationDetails?.donationName}</h1>
+                <p className='px-2 text-gray-800 outline-blue-100 mt-4' >{donationDetails?.donationDescription}</p>
 
             </div>
             <div className="my-20">
@@ -32,11 +61,16 @@ export default function DonationDetails() {
                     <hr className="w-48 h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700" />
                 </div>
                 <div className="my-5 mx-20 overflow-x-scroll flex gap-4 py-10">
+                    {
+                        feedbacks.map((feedback) => (
+
+                            <ReviewCard key={feedback.feedbackTitle} text={feedback.feedbackTitle} description={feedback.feedbackDescription} />
+                        ))
+                    }
+                    {/* <ReviewCard />
                     <ReviewCard />
                     <ReviewCard />
-                    <ReviewCard />
-                    <ReviewCard />
-                    <ReviewCard />
+                    <ReviewCard /> */}
 
                 </div>
 

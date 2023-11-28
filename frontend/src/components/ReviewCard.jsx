@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function ReviewCard() {
+export default function ReviewCard({ text, description }) {
     return (
 
         <div className=" min-w-[60%] border p-4 rounded-lg shadow-lg">
@@ -22,7 +22,8 @@ export default function ReviewCard() {
                 </svg>
             </div>
             <blockquote>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-white">"Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugiat similique ipsa qui?"</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-white">"{text}"</p>
+                <p className='text-base font-normal text-gray-500 dark:text-white'>{description}</p>
             </blockquote>
             <figcaption className="flex items-center mt-6 space-x-3 rtl:space-x-reverse">
                 <img className="w-6 h-6 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png" alt="profile picture" />

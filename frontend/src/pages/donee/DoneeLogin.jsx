@@ -1,11 +1,32 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { Link } from 'react-router-dom'
 import MainButton from '../../components/utility/MainButton'
 import CustomeInput from '../../components/utility/CustomeInput'
+import toast, { Toaster } from "react-hot-toast";
+
 export default function DoneeLogin() {
+
+    const [email, setEmail] = useState()
+    const [password, setPassword] = useState()
+
+
+    const handleDoneeLogin = () => {
+        console.log(email, password);
+        if (!email || !password) {
+            if (!email)
+                toast.error("Email cannot be empty")
+            if (!password)
+                toast.error("Password cannot be empty")
+        } else {
+            // making donee login api request
+        }
+    }
+
+
     return (
         <section className="bg-gray-50 dark:bg-gray-900">
+            <Toaster />
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
 
                 <div className="w-full shadow-lg bg-white rounded-lg  dark:border md:mt-0 sm:max-w-md xl:p-0 border">
@@ -14,11 +35,12 @@ export default function DoneeLogin() {
                             Welcome Back !
                         </h1>
                         <div className="space-y-4 md:space-y-6">
-                            <CustomeInput placeholder={"Your email"} id={"email"} type={"email"} />
+                            <CustomeInput value={email} setValue={setEmail} placeholder={"Your email"} id={"email"} type={"email"} />
 
-                            <CustomeInput placeholder={"••••••••"} id={"password"} type={"password"} />
+                            <CustomeInput value={password} setValue={setPassword} placeholder={"••••••••"} id={"password"} type={"password"} />
 
-                            <MainButton to={'/donee/dashboard/'} text={'Create a Donee account'} />
+                            {/* <MainButton to={'/donee/dashboard/'} text={'Create a Donee account'} /> */}
+                            <MainButton onClick={handleDoneeLogin} to={'/donee/dashboard/'} text={'Login as Donee'} />
 
 
 

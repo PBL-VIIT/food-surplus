@@ -1,9 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import CustomeInput from '../../components/utility/CustomeInput'
 import MainButton from '../../components/utility/MainButton'
 
 export default function DoneeRegister() {
+
+
+
+    const [name, setName] = useState()
+    const [email, setEmail] = useState()
+    const [password, setPassword] = useState()
+
+
+    const handleDoneeRegister = () => {
+        console.log(name, email, password);
+    }
+
+
     return (
         <section className="bg-gray-50 dark:bg-gray-900">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -14,12 +27,12 @@ export default function DoneeRegister() {
                             Create and account
                         </h1>
                         <div className="space-y-4 md:space-y-6">
-                            <CustomeInput placeholder={"Your Name"} id={"name"} type={"text"} />
-                            <CustomeInput placeholder={"Your email"} id={"email"} type={"email"} />
+                            <CustomeInput value={name} setValue={setName} placeholder={"Your Name"} id={"name"} type={"text"} />
+                            <CustomeInput value={email} setValue={setEmail} placeholder={"Your email"} id={"email"} type={"email"} />
 
-                            <CustomeInput placeholder={"••••••••"} id={"password"} type={"password"} />
+                            <CustomeInput value={password} setValue={setPassword} placeholder={"••••••••"} id={"password"} type={"password"} />
 
-                            <MainButton to={'/donee/dashboard/'} text={'Create a Donee account'} />
+                            <MainButton onClick={handleDoneeRegister} to={'/donee/dashboard/'} text={'Create a Donee account'} />
 
 
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">

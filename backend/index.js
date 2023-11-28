@@ -1,10 +1,13 @@
 const express = require('express')
+const cors = require('cors')
 const app = express()
 const con = require('./config')
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
-const bcrypt=require("bcrypt")
+const bcrypt = require("bcrypt")
+
+app.use(cors())
 
 // =========DONOR API =============================
 
@@ -20,11 +23,11 @@ app.get('/api/donors', (req, res) => {
 });
 
 // 2. Register Donor
-app.post('/api/donors/register',async (req, res) => {
+app.post('/api/donors/register', async (req, res) => {
     const { name, orgName, email, passwd, latitude, longitude, geohash, avgRatings } = req.body;
 
     const emailExistsQuery = 'SELECT * FROM donor WHERE email = ?';
- 
+
     con.query(emailExistsQuery, [email], (err, emailExistsResult) => {
         if (err) {
             console.error('Error checking existing email:', err);
@@ -243,7 +246,7 @@ app.post('/api/donations', (req, res) => {
     const { donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash } = req.body;
 
     const addDonationQuery = 'INSERT INTO donation (donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    
+
     con.query(addDonationQuery, [donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash], (err, addDonationResult) => {
         if (err) {
             console.error('Error adding donation:', err);
@@ -260,7 +263,7 @@ app.delete('/api/donations/:id', (req, res) => {
     const donationId = req.params.id;
 
     const deleteDonationQuery = 'DELETE FROM donation WHERE donationId = ?';
-    
+
     con.query(deleteDonationQuery, [donationId], (err, deleteDonationResult) => {
         if (err) {
             console.error('Error deleting donation:', err);
@@ -338,7 +341,7 @@ app.post('/api/feedbacks', (req, res) => {
     const { donationId, feedbackTitle, feedbackDescription, doneeId } = req.body;
 
     const addFeedbackQuery = 'INSERT INTO feedback (donationId, feedbackTitle, feedbackDescription, doneeId) VALUES (?, ?, ?, ?)';
-    
+
     con.query(addFeedbackQuery, [donationId, feedbackTitle, feedbackDescription, doneeId], (err, addFeedbackResult) => {
         if (err) {
             console.error('Error adding feedback:', err);
@@ -354,7 +357,7 @@ app.post('/api/feedbacks', (req, res) => {
 app.get('/api/feedbacks/', (req, res) => {
 
     const getFeedbacksQuery = 'SELECT * FROM feedback';
-    
+
     con.query(getFeedbacksQuery, (err, feedbacks) => {
         if (err) {
             console.error('Error getting feedbacks from donation ID:', err);
@@ -370,7 +373,7 @@ app.get('/api/feedbacks/:id', (req, res) => {
     const donationId = req.params.id;
 
     const getFeedbacksQuery = 'SELECT * FROM feedback WHERE donationId = ?';
-    
+
     con.query(getFeedbacksQuery, [donationId], (err, feedbacks) => {
         if (err) {
             console.error('Error getting feedbacks from donation ID:', err);
@@ -390,7 +393,7 @@ app.post('/api/reviews', (req, res) => {
     const { doneeId, donorId, reviewTitle, reviewDescription, rating } = req.body;
 
     const addReviewQuery = 'INSERT INTO review (doneeId, donorId, reviewTitle, reviewDescription, rating) VALUES (?, ?, ?, ?, ?)';
-    
+
     con.query(addReviewQuery, [doneeId, donorId, reviewTitle, reviewDescription, rating], (err, addReviewResult) => {
         if (err) {
             console.error('Error adding review:', err);
@@ -407,7 +410,7 @@ app.get('/api/reviews/:id', (req, res) => {
     const donorId = req.params.id;
 
     const getReviewsQuery = 'SELECT * FROM review WHERE donorId = ?';
-    
+
     con.query(getReviewsQuery, [donorId], (err, reviews) => {
         if (err) {
             console.error('Error getting reviews by donor ID:', err);
