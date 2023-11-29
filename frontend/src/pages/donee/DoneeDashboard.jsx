@@ -1,9 +1,28 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import DonationCard from '../../components/DonationCard'
 import DashboardNav from '../../components/DashboardNav'
 import DonationCategoryCard from '../../components/DonationCategoryCard'
+import { getAllDonations } from '../../api/donation'
+import toast from 'react-hot-toast'
 
 export default function DoneeDashboard() {
+
+
+    const [allDonations, setAllDoantions] = useState([])
+
+    useEffect(() => {
+
+        const getDonations = async () => {
+
+            let res = await getAllDonations()
+            console.log(res);
+            setAllDoantions(res.data)
+            toast.success("All Donations fetched successfully")
+        }
+        getDonations()
+
+
+    }, [])
     return (
         <div>
             <DashboardNav />
@@ -24,13 +43,24 @@ export default function DoneeDashboard() {
 
 
 
-                <h1 className='text-3xl font-semibold mt-10'>Available Donations categories</h1>
+                <h1 className='text-3xl font-semibold mt-10'>Available Donations</h1>
 
                 <div className="my-4 grid grid-cols-3 gap-6">
+
+                    {
+                        allDonations.map((donation) => (
+                            <DonationCard key={donation.donationId}
+                                cardType={'donee'}
+                                donationName={donation.donationName} donationDescription={donation.donationDescription}
+                                donationId={donation.donationId}
+                            />
+                        ))
+                    }
+
+                    {/* <DonationCategoryCard />
                     <DonationCategoryCard />
                     <DonationCategoryCard />
-                    <DonationCategoryCard />
-                    <DonationCategoryCard />
+                    <DonationCategoryCard /> */}
                 </div>
             </div>
 

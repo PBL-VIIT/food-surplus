@@ -38,6 +38,7 @@ export default function DonorDashboard() {
                         allDonations.map((donation) => (
                             <DonationCard key={donation.donationId}
                                 donationName={donation.donationName} donationDescription={donation.donationDescription}
+                                cardType={'donor'}
                                 donationId={donation.donationId}
                             />
                         ))

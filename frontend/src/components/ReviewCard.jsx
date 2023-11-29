@@ -1,6 +1,21 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { getSingleDonee } from '../api/donee'
 
-export default function ReviewCard({ text, description }) {
+export default function ReviewCard({ text, description, byUserId }) {
+    const [doneeDetails, setDoneeDetails] = useState()
+
+    useEffect(() => {
+        const getCommentor = async () => {
+
+
+            let donee = await getSingleDonee(byUserId)
+            setDoneeDetails(donee.data)
+            // console.log("donee", donee);
+        }
+        getCommentor()
+
+    }, [])
+
     return (
 
         <div className=" min-w-[60%] border p-4 rounded-lg shadow-lg">
@@ -28,8 +43,8 @@ export default function ReviewCard({ text, description }) {
             <figcaption className="flex items-center mt-6 space-x-3 rtl:space-x-reverse">
                 <img className="w-6 h-6 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png" alt="profile picture" />
                 <div className="flex items-center divide-x-2 rtl:divide-x-reverse divide-gray-300 dark:divide-gray-700">
-                    <cite className="pe-3 font-medium text-gray-900 dark:text-white">John Doe</cite>
-                    <cite className="ps-3 text-sm text-gray-500 dark:text-gray-400">CEO at blabla</cite>
+                    <cite className="pe-3 font-medium text-gray-900 dark:text-white">{doneeDetails?.doneeName}</cite>
+
                 </div>
             </figcaption>
         </div>
