@@ -14,3 +14,15 @@ export const getSingleDonor = async (donorId) => {
         console.error('Data fetching failed:', error);
     }
 }
+
+// get single donations
+export const loginDonor = async (email, passwd) => {
+    try {
+
+        const responce = await axios.post(`${API_URL}/donors/login`, { email: email, passwd: passwd });
+        return responce
+
+    } catch (error) {
+        console.error('Data fetching failed:', error);
+    }
+}

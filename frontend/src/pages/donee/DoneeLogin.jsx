@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import MainButton from '../../components/utility/MainButton'
 import CustomeInput from '../../components/utility/CustomeInput'
 import toast, { Toaster } from "react-hot-toast";
+import { loginDonee } from '../../api/donee';
 
 export default function DoneeLogin() {
 
@@ -20,6 +21,13 @@ export default function DoneeLogin() {
                 toast.error("Password cannot be empty")
         } else {
             // making donee login api request
+            try {
+
+                let res = loginDonee(email, password)
+                console.log(res);
+            } catch (error) {
+
+            }
         }
     }
 

@@ -332,6 +332,21 @@ app.get('/api/donations', (req, res) => {
         res.json(donations);
     });
 });
+
+// 5. Get Donations by Donor ID
+app.get('/api/donations/:donorId', (req, res) => {
+    const donorId = req.params.donorId;
+    const getDonationsByDonorIdQuery = 'SELECT * FROM donation WHERE donorId = ?';
+
+    con.query(getDonationsByDonorIdQuery, [donorId], (err, donations) => {
+        if (err) {
+            console.error('Error getting donations by donor ID:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        res.json(donations);
+    });
+});
 // =========DONATION API  END=============================
 
 // =========FEEDBACK API =============================
