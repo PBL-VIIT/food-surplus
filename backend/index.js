@@ -258,23 +258,46 @@ app.delete('/api/donations/:id', (req, res) => {
 // 3. Update Donation
 app.put('/api/donations/:id', (req, res) => {
     const donationId = req.params.id;
-    const { donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash } = req.body;
+    const {
+        donorId,
+        donationName,
+        donationType,
+        noOfDonations,
+        donationDescription,
+        donationExpiry,
+        donationPickupLatitude,
+        donationPickupLongitude,
+        donationPickupGeohash
+    } = req.body;
 
-    const updateDonationQuery = 'UPDATE Donation SET donorId = ?, donationName = ?, donationType = ?, noOfDonations = ?, donationDescription = ?, donationExpiry = ?, donationPickupLatitude = ?, donationPickupLongitude = ?, donationPickupGeohash = ? WHERE donationId = ?';
+    // Call the stored procedure with cursor
+    const updateDonationWithCursorQuery = 'CALL UpdateDonationWithCursor(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
-    con.query(updateDonationQuery, [donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash, donationId], (err, updateDonationResult) => {
-        if (err) {
-            console.error('Error updating donation:', err);
-            return res.status(500).json({ error: 'Internal server error' });
+    con.query(
+        updateDonationWithCursorQuery,
+        [
+            donationId,
+            donorId,
+            donationName,
+            donationType,
+            noOfDonations,
+            donationDescription,
+            donationExpiry,
+            donationPickupLatitude,
+            donationPickupLongitude,
+            donationPickupGeohash
+        ],
+        (err, updateDonationResult) => {
+            if (err) {
+                console.error('Error updating donation with cursor:', err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+
+            res.json({ message: 'Donation updated successfully' });
         }
-
-        if (updateDonationResult.affectedRows === 0) {
-            return res.status(404).json({ error: 'Donation not found' });
-        }
-
-        res.json({ message: 'Donation updated successfully' });
-    });
+    );
 });
+
 
 // 4. Get Single Donation
 app.get('/api/donations/:id', (req, res) => {
