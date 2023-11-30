@@ -23,40 +23,26 @@ app.get('/api/donors', (req, res) => {
 });
 
 // 2. Register Donor
-app.post('/api/donors/register', async (req, res) => {
+app.post('/api/donors/register', (req, res) => {
     const { name, orgName, email, passwd, latitude, longitude, geohash, avgRatings } = req.body;
 
-    const emailExistsQuery = 'SELECT * FROM donor WHERE email = ?';
-
-    con.query(emailExistsQuery, [email], (err, emailExistsResult) => {
+    const insertDonorQuery = 'CALL RegisterDonor(?, ?, ?, ?, ?, ?, ?, ?)';
+    con.query(insertDonorQuery, [name, orgName, email, passwd, latitude, longitude, geohash, avgRatings], (err) => {
         if (err) {
-            console.error('Error checking existing email:', err);
+            console.error('Error registering donor:', err);
+
+            if (err.code === 'ER_SIGNAL_EXCEPTION' && err.sqlState === '45000') {
+                // Email already registered error
+                return res.status(400).json({ error: 'Email already registered' });
+            }
+
             return res.status(500).json({ error: 'Internal server error' });
         }
 
-        if (emailExistsResult.length > 0) {
-            return res.status(400).json({ error: 'Email already registered' });
-        }
-
-        // bcrypt.hash(passwd, 10, (hashErr, hashedpasswd) => {
-        //     if (hashErr) {
-        //         console.error('Error hashing passwd:', hashErr);
-        //         return res.status(500).json({ error: 'Internal server error' });
-        //     }
-
-        const insertDonorQuery = 'INSERT INTO Donor (name, orgName, email, passwd, latitude, longitude, geohash, avgRatings) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        con.query(insertDonorQuery, [name, orgName, email, passwd, latitude, longitude, geohash, avgRatings], (insertErr, insertDonorResult) => {
-            if (insertErr) {
-                console.error('Error registering donor:', insertErr);
-                return res.status(500).json({ error: 'Internal server error' });
-            }
-
-            const donorId = insertDonorResult.insertId;
-            res.status(201).json({ message: 'Donor registered successfully', donorId });
-        });
+        res.status(201).json({ message: 'Donor registered successfully' });
     });
-    // });
 });
+
 
 // 3. Login Donor
 app.post('/api/donors/login', (req, res) => {
@@ -134,31 +120,23 @@ app.put('/api/donors/:id', (req, res) => {
 app.post('/api/donees/register', (req, res) => {
     const { doneeName, latitude, longitude, geohash, email, passwd } = req.body;
 
-    // Check if the email already exists
-    const emailExistsQuery = 'SELECT * FROM Donee WHERE email = ?';
-    con.query(emailExistsQuery, [email], (err, emailExistsResult) => {
+    const registerDoneeProcedure = 'CALL RegisterDonee(?, ?, ?, ?, ?, ?)';
+    con.query(registerDoneeProcedure, [doneeName, latitude, longitude, geohash, email, passwd], (err) => {
         if (err) {
-            console.error('Error checking email:', err);
+            console.error('Error registering donee:', err);
+
+            if (err.code === 'ER_SIGNAL_EXCEPTION' && err.sqlState === '45000') {
+                // Email already registered error
+                return res.status(400).json({ error: 'Email already registered' });
+            }
+
             return res.status(500).json({ error: 'Internal server error' });
         }
 
-        if (emailExistsResult.length > 0) {
-            return res.status(400).json({ error: 'Email already registered' });
-        }
-
-        // Insert new donee
-        const insertDoneeQuery = 'INSERT INTO Donee (doneeName, latitude, longitude, geohash, email, passwd) VALUES (?, ?, ?, ?, ?, ?)';
-        con.query(insertDoneeQuery, [doneeName, latitude, longitude, geohash, email, passwd], (err, insertDoneeResult) => {
-            if (err) {
-                console.error('Error inserting donee:', err);
-                return res.status(500).json({ error: 'Internal server error' });
-            }
-
-            const doneeId = insertDoneeResult.insertId;
-            res.status(201).json({ message: 'Donee registered successfully', doneeId });
-        });
+        res.status(201).json({ message: 'Donee registered successfully' });
     });
 });
+
 
 // 2. Login Donee
 app.post('/api/donees/login', (req, res) => {
@@ -245,18 +223,17 @@ app.put('/api/donees/:id', (req, res) => {
 app.post('/api/donations', (req, res) => {
     const { donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash } = req.body;
 
-    const addDonationQuery = 'INSERT INTO donation (donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-
-    con.query(addDonationQuery, [donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash], (err, addDonationResult) => {
+    const addDonationProcedure = 'CALL AddDonation(?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    con.query(addDonationProcedure, [donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash], (err) => {
         if (err) {
             console.error('Error adding donation:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 
-        const donationId = addDonationResult.insertId;
-        res.status(201).json({ message: 'Donation added successfully', donationId });
+        res.status(201).json({ message: 'Donation added successfully' });
     });
 });
+
 
 // 2. Delete Donation
 app.delete('/api/donations/:id', (req, res) => {
@@ -340,18 +317,17 @@ app.get('/api/donations', (req, res) => {
 app.post('/api/feedbacks', (req, res) => {
     const { donationId, feedbackTitle, feedbackDescription, doneeId } = req.body;
 
-    const addFeedbackQuery = 'INSERT INTO feedback (donationId, feedbackTitle, feedbackDescription, doneeId) VALUES (?, ?, ?, ?)';
-
-    con.query(addFeedbackQuery, [donationId, feedbackTitle, feedbackDescription, doneeId], (err, addFeedbackResult) => {
+    const addFeedbackProcedure = 'CALL AddFeedback(?, ?, ?, ?)';
+    con.query(addFeedbackProcedure, [donationId, feedbackTitle, feedbackDescription, doneeId], (err) => {
         if (err) {
             console.error('Error adding feedback:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 
-        const feedbackId = addFeedbackResult.insertId;
-        res.status(201).json({ message: 'Feedback added successfully', feedbackId });
+        res.status(201).json({ message: 'Feedback added successfully' });
     });
 });
+
 
 // 2. Get Feedback
 app.get('/api/feedbacks/', (req, res) => {
@@ -392,18 +368,17 @@ app.get('/api/feedbacks/:id', (req, res) => {
 app.post('/api/reviews', (req, res) => {
     const { doneeId, donorId, reviewTitle, reviewDescription, rating } = req.body;
 
-    const addReviewQuery = 'INSERT INTO review (doneeId, donorId, reviewTitle, reviewDescription, rating) VALUES (?, ?, ?, ?, ?)';
-
-    con.query(addReviewQuery, [doneeId, donorId, reviewTitle, reviewDescription, rating], (err, addReviewResult) => {
+    const addReviewProcedure = 'CALL AddReview(?, ?, ?, ?, ?)';
+    con.query(addReviewProcedure, [doneeId, donorId, reviewTitle, reviewDescription, rating], (err) => {
         if (err) {
             console.error('Error adding review:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 
-        const reviewId = addReviewResult.insertId;
-        res.status(201).json({ message: 'Review added successfully', reviewId });
+        res.status(201).json({ message: 'Review added successfully' });
     });
 });
+
 
 // 2. Get All Reviews by Donor ID
 app.get('/api/reviews/:id', (req, res) => {
