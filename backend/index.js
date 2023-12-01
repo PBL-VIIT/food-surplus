@@ -23,7 +23,7 @@ app.get('/api/donors', (req, res) => {
 });
 
 // 2. Register Donor
-app.post('/api/donors/register', (req, res) => {
+app.post('/api/donor/register', (req, res) => {
     const { name, orgName, email, passwd, latitude, longitude, geohash, avgRatings } = req.body;
 
     const insertDonorQuery = 'CALL RegisterDonor(?, ?, ?, ?, ?, ?, ?, ?)';
@@ -118,7 +118,7 @@ app.put('/api/donors/:id', (req, res) => {
 // =========DONEE API =============================
 
 // 1. Register Donee
-app.post('/api/donees/register', (req, res) => {
+app.post('/api/donee/register', (req, res) => {
     const { doneeName, latitude, longitude, geohash, email, passwd } = req.body;
 
     const registerDoneeProcedure = 'CALL RegisterDonee(?, ?, ?, ?, ?, ?)';
@@ -222,23 +222,29 @@ app.put('/api/donees/:id', (req, res) => {
 
 // =========DONATION API =============================
 // 1. Add Donation
-app.post('/api/donations', (req, res) => {
+app.post('/api/donation', (req, res) => {
     const { donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash } = req.body;
 
+    console.log(req.body);
+
     const addDonationProcedure = 'CALL AddDonation(?, ?, ?, ?, ?, ?, ?, ?, ?)';
+
     con.query(addDonationProcedure, [donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash], (err) => {
         if (err) {
+
+
             console.error('Error adding donation:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 
-        res.status(201).json({ message: 'Donation added successfully' });
+        res.status(200).json({ message: 'Donation added successfully' });
     });
+
 });
 
 
 // 2. Delete Donation
-app.delete('/api/donations/:id', (req, res) => {
+app.delete('/api/donation/:id', (req, res) => {
     const donationId = req.params.id;
 
     const deleteDonationQuery = 'DELETE FROM donation WHERE donationId = ?';
@@ -253,12 +259,12 @@ app.delete('/api/donations/:id', (req, res) => {
             return res.status(404).json({ error: 'Donation not found' });
         }
 
-        res.json({ message: 'Donation deleted successfully' });
+        res.status(200).json({ message: 'Donation deleted successfully' });
     });
 });
 
 // 3. Update Donation
-app.put('/api/donations/:id', (req, res) => {
+app.put('/api/donation/:id', (req, res) => {
     const donationId = req.params.id;
     const {
         donorId,

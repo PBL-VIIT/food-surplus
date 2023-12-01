@@ -26,3 +26,14 @@ export const loginDonee = async (email, passwd) => {
         console.error('Data fetching failed:', error);
     }
 }
+// register donee
+export const registerDonee = async (doneeName, latitude, longitude, geohash, email, passwd) => {
+    try {
+
+        const responce = await axios.post(`${API_URL}/donee/register`, { doneeName, latitude, longitude, geohash, email, passwd });
+        return responce
+
+    } catch (error) {
+        console.error('Data insert failed:', error);
+    }
+}

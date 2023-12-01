@@ -26,3 +26,15 @@ export const loginDonor = async (email, passwd) => {
         console.error('Data fetching failed:', error);
     }
 }
+
+// register donee
+export const registerDonor = async (name, orgName, email, passwd, latitude, longitude, geohash, avgRatings) => {
+    try {
+
+        const responce = await axios.post(`${API_URL}/donor/register`, { name, orgName, email, passwd, latitude, longitude, geohash, avgRatings });
+        return responce
+
+    } catch (error) {
+        console.error('Data insert failed:', error);
+    }
+}

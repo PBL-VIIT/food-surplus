@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import DashboardNav from '../../components/DashboardNav'
 import ReviewCard from '../../components/ReviewCard'
-import { useParams, } from 'react-router-dom'
+import { Link, useParams, } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
-import { getSingleDonation } from '../../api/donation'
+import { deleteDonation, getSingleDonation } from '../../api/donation'
 import { getFeedbackByDonation } from '../../api/feedback'
 import { getSingleDonor } from '../../api/donor'
+import { useNavigate } from 'react-router-dom'
+
 
 export default function DonationDetails() {
 
     let { donationId } = useParams()
+    const navigate = useNavigate()
+
 
     const [donationDetails, setDonationDetails] = useState()
     const [feedbacks, setFeedbacks] = useState()
     const [donorDetails, setDonorDetails] = useState()
+    const [isDonor, setIsDonor] = useState(false)
 
     useEffect(() => {
         const getDonation = async () => {
@@ -28,12 +33,37 @@ export default function DonationDetails() {
 
 
             let donor = await getSingleDonor(res.data.donorId)
+            const donorFromStorage = JSON.parse(localStorage.getItem('donor'))
+
+            if (donorFromStorage?.donor?.donorId === res?.data?.donorId) {
+
+                setIsDonor(true)
+            }
+
+
             setDonorDetails(donor.data)
             // console.log("donor", donorDetails);
         }
         getDonation()
 
     }, [])
+
+
+    const handleDeleteDonation = async () => {
+        try {
+            const res = await deleteDonation(donationId)
+            if (res.status === 200) {
+                toast.success("Donation deleted successfully")
+                setTimeout(() => {
+                    navigate("/donor/dashboard");
+                }, 2000);
+            } else {
+                toast.error("Donation deletion failed")
+            }
+        } catch (error) {
+            console.log("Donation deletion failed", error);
+        }
+    }
 
 
 
@@ -55,6 +85,19 @@ export default function DonationDetails() {
 
                         <p className='p-2 rounded-md border border-red-300 bg-red-100 h-fit'><b>Expiry Date -</b> {donationDetails?.donationExpiry}</p>
                         <p className='text-lg mt-2 border border-gray-300 rounded-md px-2 w-fit shadow-lg bg-green-50 shadow-gray-300/10'>Number of Donations - <span className='text-xl font-bold'>{donationDetails?.noOfDonations}</span></p>
+                        {
+                            isDonor &&
+                            <div className=" flex gap-2 mt-5">
+                                <Link to={`/donor/dashboard/updateDonation/${donationId}`} className="text-white bg-gradient-to-br from-green-500 to-blue-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-xl text-base text-center shadow-lg shadow-green-400/40 px-4 py-2">Update</Link>
+
+
+                                <button onClick={handleDeleteDonation} className="text-white bg-gradient-to-br from-red-500 to-pink-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-red-800 font-medium rounded-xl text-base text-center shadow-lg shadow-red-400/40 px-4 py-2">Delete</button>
+                            </div>
+
+                        }
+
+
+
                     </div>
 
                 </div>
@@ -64,7 +107,7 @@ export default function DonationDetails() {
 
                     <div className="mt-3">
                         <div className="text-xs">Donor's Name</div>
-                        <h1 className='font-bold'>{donorDetails?.name}</h1>
+                        <Link to={`/donorDetails/${donorDetails?.donorId}`} className='font-bold underline cursor-pointer hover:text-mainColor'>{donorDetails?.name}</Link>
                     </div>
                     <div className="mt-3">
                         <div className="text-xs">Donor's Rating</div>

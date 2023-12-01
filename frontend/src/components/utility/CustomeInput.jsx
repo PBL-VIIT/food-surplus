@@ -1,7 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 export default function CustomeInput({ id, label, placeholder, value, type, setValue }) {
-    const [inputValue, setInputValue] = useState('');
+    const [inputValue, setInputValue] = useState(value);
+
+    useEffect(() => {
+
+        setInputValue(value)
+    })
 
     const handleOnChange = (e) => {
         setInputValue(e.target.value)

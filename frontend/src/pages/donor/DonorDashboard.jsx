@@ -29,7 +29,7 @@ export default function DonorDashboard() {
             getDonations(donor?.donor?.donorId)
         }
         else {
-            navigate('');
+            // navigate('');
         }
 
 

@@ -1,13 +1,16 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import DashboardNav from '../../components/DashboardNav'
 import CustomeInput from '../../components/utility/CustomeInput'
 import MainButton from '../../components/utility/MainButton'
 import toast, { Toaster } from 'react-hot-toast';
-import { createNewDonation } from '../../api/donation';
-import { useNavigate } from 'react-router-dom'
+import { createNewDonation, getSingleDonation, updateDonation } from '../../api/donation';
+import { useNavigate, useParams } from 'react-router-dom'
 
 
-export default function NewDonation() {
+export default function UpdateDonation() {
+
+    const { donationId } = useParams()
+
 
     const [donationName, setDonationName] = useState('');
     const [donationType, setDonationType] = useState('');
@@ -18,18 +21,48 @@ export default function NewDonation() {
     const [donationPickupLongitude, setDonationPickupLongitude] = useState('');
     const [donationPickupGeohash, setDonationPickupGeohash] = useState('');
 
+    const navigate = useNavigate()
+
 
     const donorDetails = JSON.parse(localStorage.getItem('donor'))
 
     const donorId = donorDetails?.donor?.donorId
 
+    useEffect(() => {
+
+        if (!donorDetails) {
+            navigate('/donor_login')
+        } else {
+            const fetchDonation = async () => {
+
+                const donationDetailsFetched = await getSingleDonation(donationId)
+                // setDonationDetails(donationDetailsFetched.data)
+
+                setDonationName(donationDetailsFetched.data?.donationName)
+                setDonationType(donationDetailsFetched.data?.donationType)
+                setNoOfDonations(donationDetailsFetched.data?.noOfDonations)
+                setDonationDescription(donationDetailsFetched.data?.donationDescription)
+                setDonationExpiry(donationDetailsFetched.data?.donationExpiry
+                )
+                setDonationPickupLatitude(donationDetailsFetched.data?.donationPickupLatitude)
+                setDonationPickupLongitude(donationDetailsFetched.data?.donationPickupLongitude)
+                setDonationPickupGeohash(donationDetailsFetched.data?.donationPickupGeohash)
+
+                console.log(donationName);
+                // console.log(donationDetailsFetched.data);
+            }
+            fetchDonation()
+
+        }
+    }, [])
 
 
 
-    const navigate = useNavigate()
 
 
-    const handleNewDonation = async () => {
+
+
+    const handleUpdateDonation = async () => {
         // console.log( );
 
         if (!donationName || !donationType || !noOfDonations || !donationDescription || !donationExpiry || !donationPickupGeohash || !donationPickupLatitude || !donationPickupLongitude) {
@@ -37,19 +70,29 @@ export default function NewDonation() {
         }
         else {
             try {
-                let res = await createNewDonation(donorId, donationName, donationType, noOfDonations, donationDescription, donationExpiry, donationPickupLatitude, donationPickupLongitude, donationPickupGeohash)
+                let res = await updateDonation(
+                    donationId,
+                    donorId,
+                    donationName,
+                    donationType,
+                    noOfDonations,
+                    donationDescription,
+                    donationExpiry,
+                    donationPickupLatitude,
+                    donationPickupLongitude,
+                    donationPickupGeohash)
 
                 if (res.status === 200) {
-                    toast.success("Donation created successfully")
+                    toast.success("Donation update successfully")
                     navigate("/donor/dashboard")
 
 
                 }
                 else {
-                    toast.error("Donation creation failed")
+                    toast.error("Donation updation failed")
                 }
             } catch (error) {
-                toast.error("Donation creation failed catchs")
+                toast.error("Donation updation failed catch")
             }
         }
 
@@ -61,7 +104,7 @@ export default function NewDonation() {
             <DashboardNav />
             <Toaster />
             <div className="px-16 py-10 pt-32 w-4/5">
-                <h1 className='font-semibold text-2xl'>Create new donation</h1>
+                <h1 className='font-semibold text-2xl'>Update donation</h1>
 
 
                 <CustomeInput value={donationName} setValue={setDonationName} label={"Donation Name"} placeholder={"Enter Donation Name"} type={"text"} />
@@ -137,7 +180,7 @@ export default function NewDonation() {
 
                 <div className="w-fit">
 
-                    <MainButton onClick={handleNewDonation} extraClasse={"mt-4 "} text={"Add new donation"} />
+                    <MainButton onClick={handleUpdateDonation} extraClasse={"mt-4 "} text={"Update donation"} />
                 </div>
             </div>
         </div>
