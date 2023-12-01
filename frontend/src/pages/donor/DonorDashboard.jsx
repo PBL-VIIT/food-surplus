@@ -3,22 +3,35 @@ import DashboardNav from '../../components/DashboardNav'
 import DonationCard from '../../components/DonationCard'
 import { Link } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
-import { getAllDonations } from '../../api/donation'
+import { getDonationsByDonor } from '../../api/donation'
+import { useNavigate } from 'react-router-dom'
+
 
 export default function DonorDashboard() {
 
-    const [allDonations, setAllDoantions] = useState([])
+    const [allDonations, setAllDonations] = useState([])
+    const navigate = useNavigate()
 
     useEffect(() => {
 
-        const getDonations = async () => {
+        const getDonations = async (donorId) => {
 
-            let res = await getAllDonations()
+            let res = await getDonationsByDonor(donorId)
             console.log(res);
-            setAllDoantions(res.data)
+            setAllDonations(res.data)
             toast.success("All Donations fetched successfully")
         }
-        getDonations()
+        const donor = JSON.parse(localStorage.getItem('donor'))
+
+
+        if (donor) {
+            console.log(donor?.donor?.donorId);
+            getDonations(donor?.donor?.donorId)
+        }
+        else {
+            navigate('');
+        }
+
 
 
     }, [])

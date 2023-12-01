@@ -69,7 +69,8 @@ app.post('/api/donors/login', (req, res) => {
             return res.status(401).json({ error: 'Invalid email or passwd' });
         }
 
-        res.json({ message: 'Login successful' });
+        // const { donorId, donorName, email } = donor[0];
+        res.json({ message: 'Login successful', donor: donor[0] });
     });
 });
 
@@ -143,7 +144,7 @@ app.post('/api/donees/login', (req, res) => {
     const { email, passwd } = req.body;
 
     // Check if the email exists
-    const checkEmailQuery = 'SELECT * FROM Donee WHERE email = ?';
+    const checkEmailQuery = 'SELECT * FROM donee WHERE email = ?';
     con.query(checkEmailQuery, [email], (err, donee) => {
         if (err) {
             console.error('Error checking email:', err);
@@ -159,14 +160,15 @@ app.post('/api/donees/login', (req, res) => {
             return res.status(401).json({ error: 'Invalid email or passwd' });
         }
 
-        res.json({ message: 'Login successful' });
+        const { doneeId, doneeName, email } = donee[0];
+        res.json({ message: 'Login successful', doneeId, doneeName, email });
     });
 });
 
-// 3. Get Donee Details by Donee ID
+// 3. Get donee Details by donee ID
 app.get('/api/donees/:id', (req, res) => {
     const doneeId = req.params.id;
-    const getDoneeQuery = 'SELECT * FROM Donee WHERE doneeId = ?';
+    const getDoneeQuery = 'SELECT * FROM donee WHERE doneeId = ?';
 
     con.query(getDoneeQuery, [doneeId], (err, donees) => {
         if (err) {
@@ -196,12 +198,12 @@ app.get('/api/donees', (req, res) => {
     });
 });
 
-// 5. Update Donee Details by Donee ID
+// 5. Update donee Details by donee ID
 app.put('/api/donees/:id', (req, res) => {
     const doneeId = req.params.id;
     const { doneeName, latitude, longitude, geohash } = req.body;
 
-    const updateDoneeQuery = 'UPDATE Donee SET doneeName = ?, latitude = ?, longitude = ?, geohash = ? WHERE doneeId = ?';
+    const updateDoneeQuery = 'UPDATE donee SET doneeName = ?, latitude = ?, longitude = ?, geohash = ? WHERE doneeId = ?';
     con.query(updateDoneeQuery, [doneeName, latitude, longitude, geohash, doneeId], (err, updateDoneeResult) => {
         if (err) {
             console.error('Error updating donee details:', err);
@@ -334,7 +336,7 @@ app.get('/api/donations', (req, res) => {
 });
 
 // 5. Get Donations by Donor ID
-app.get('/api/donations/:donorId', (req, res) => {
+app.get('/api/donations/donor/:donorId', (req, res) => {
     const donorId = req.params.donorId;
     const getDonationsByDonorIdQuery = 'SELECT * FROM donation WHERE donorId = ?';
 

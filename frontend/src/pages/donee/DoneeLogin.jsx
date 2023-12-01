@@ -5,14 +5,18 @@ import MainButton from '../../components/utility/MainButton'
 import CustomeInput from '../../components/utility/CustomeInput'
 import toast, { Toaster } from "react-hot-toast";
 import { loginDonee } from '../../api/donee';
+import { useNavigate } from 'react-router-dom'
+
 
 export default function DoneeLogin() {
 
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
 
+    const navigate = useNavigate()
 
-    const handleDoneeLogin = () => {
+
+    const handleDoneeLogin = async () => {
         console.log(email, password);
         if (!email || !password) {
             if (!email)
@@ -23,10 +27,18 @@ export default function DoneeLogin() {
             // making donee login api request
             try {
 
-                let res = loginDonee(email, password)
+                let res = await loginDonee(email, password)
+                if (res.status === 200) {
+                    toast.success("Login sucessful")
+
+                    localStorage.setItem('donee', JSON.stringify(res.data));
+                    setTimeout(() => {
+                        navigate("/donee/dashboard");
+                    }, 2000);
+                }
                 console.log(res);
             } catch (error) {
-
+                toast.error("Login Failed")
             }
         }
     }

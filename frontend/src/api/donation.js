@@ -24,3 +24,14 @@ export const getSingleDonation = async (donationId) => {
         console.error('Data fetching failed:', error);
     }
 }
+// get single donations
+export const getDonationsByDonor = async (donorId) => {
+    try {
+
+        const responce = await axios.get(`${API_URL}/donations/donor/${donorId}`);
+        return responce
+
+    } catch (error) {
+        console.error('Data fetching failed:', error);
+    }
+}

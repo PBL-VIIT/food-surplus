@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import MainButton from '../../components/utility/MainButton'
 import CustomeInput from '../../components/utility/CustomeInput'
 import { Link } from 'react-router-dom'
-import toast from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import { loginDonor } from '../../api/donor'
+import { useNavigate } from 'react-router-dom'
 
 export default function DonorLogin() {
 
@@ -11,6 +12,7 @@ export default function DonorLogin() {
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
 
+    const navigate = useNavigate()
 
     const handleDonorLogin = async () => {
         console.log(email, password);
@@ -27,10 +29,16 @@ export default function DonorLogin() {
                 let res = await loginDonor(email, password)
                 if (res.status === 200) {
                     toast.success("Login sucessful")
+                    console.log(res.data)
+                    localStorage.setItem('donor', JSON.stringify(res.data));
+                    setTimeout(() => {
+                        navigate("/donor/dashboard");
+                    }, 2000);
+
                 }
                 console.log(res);
             } catch (error) {
-
+                toast.error("Login Failed")
             }
         }
     }
@@ -38,6 +46,7 @@ export default function DonorLogin() {
     return (
         <section className="bg-gray-50 dark:bg-gray-900">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+                <Toaster />
 
                 <div className="w-full bg-white rounded-lg shadow-lg dark:border md:mt-0 sm:max-w-md xl:p-0 border">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
