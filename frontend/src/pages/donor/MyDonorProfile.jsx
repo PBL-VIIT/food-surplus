@@ -35,7 +35,7 @@ export default function MyDonorProfile() {
 
             let donor = await getSingleDonor(donorId)
             setDonorDetails(donor?.data)
-            toast.success("Donor Details Fetched")
+            // toast.success("Donor Profile Fetched")
 
             let fetchReviews = await getReviewsByDonorId(donorId)
             setReviews(fetchReviews?.data)
@@ -52,6 +52,17 @@ export default function MyDonorProfile() {
 
 
     }, [])
+
+    useEffect(() => {
+        const getDonorDetails = async () => {
+
+            let donor = await getSingleDonor(donorId)
+            setDonorDetails(donor?.data)
+            toast.success("Donor Profile Fetched")
+        }
+        getDonorDetails()
+
+    }, [togglePages])
 
     const handleLogOut = () => {
         localStorage.removeItem('donor');
@@ -130,7 +141,7 @@ export default function MyDonorProfile() {
                         </div>
 
 
-                    </div> : <EditDonorProfile />
+                    </div> : <EditDonorProfile setTogglePages={setTogglePages} togglePages={togglePages} />
             }
 
 

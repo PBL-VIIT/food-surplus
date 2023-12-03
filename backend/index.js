@@ -94,12 +94,12 @@ app.get('/api/donors/:id', (req, res) => {
 });
 
 // 5. Update Donor Details by Donor ID
-app.put('/api/donors/:id', (req, res) => {
+app.put('/api/donor/:id', (req, res) => {
     const donorId = req.params.id;
-    const { name, orgName, latitude, longitude, geohash, avgRatings } = req.body;
+    const { name, orgName, latitude, longitude, geohash, passwd } = req.body;
 
-    const updateDonorQuery = 'UPDATE Donor SET name = ?, orgName = ?, latitude = ?, longitude = ?, geohash = ?, avgRatings = ? WHERE donorId = ?';
-    con.query(updateDonorQuery, [name, orgName, latitude, longitude, geohash, avgRatings, donorId], (err, updateDonorResult) => {
+    const updateDonorQuery = 'UPDATE Donor SET name = ?, orgName = ?, latitude = ?, longitude = ?, geohash = ?, passwd = ? WHERE donorId = ?';
+    con.query(updateDonorQuery, [name, orgName, latitude, longitude, geohash, passwd, donorId], (err, updateDonorResult) => {
         if (err) {
             console.error('Error updating donor details:', err);
             return res.status(500).json({ error: 'Internal server error' });
@@ -109,7 +109,7 @@ app.put('/api/donors/:id', (req, res) => {
             return res.status(404).json({ error: 'Donor not found' });
         }
 
-        res.json({ message: 'Donor updated successfully' });
+        res.status(200).json({ message: 'Donor updated successfully' });
     });
 });
 
@@ -199,12 +199,12 @@ app.get('/api/donees', (req, res) => {
 });
 
 // 5. Update donee Details by donee ID
-app.put('/api/donees/:id', (req, res) => {
+app.put('/api/donee/:id', (req, res) => {
     const doneeId = req.params.id;
-    const { doneeName, latitude, longitude, geohash } = req.body;
+    const { doneeName, latitude, longitude, geohash, passwd } = req.body;
 
-    const updateDoneeQuery = 'UPDATE donee SET doneeName = ?, latitude = ?, longitude = ?, geohash = ? WHERE doneeId = ?';
-    con.query(updateDoneeQuery, [doneeName, latitude, longitude, geohash, doneeId], (err, updateDoneeResult) => {
+    const updateDoneeQuery = 'UPDATE donee SET doneeName = ?, latitude = ?, longitude = ?, geohash = ?, passwd = ? WHERE doneeId = ?';
+    con.query(updateDoneeQuery, [doneeName, latitude, longitude, geohash, passwd, doneeId], (err, updateDoneeResult) => {
         if (err) {
             console.error('Error updating donee details:', err);
             return res.status(500).json({ error: 'Internal server error' });

@@ -37,3 +37,15 @@ export const registerDonee = async (doneeName, latitude, longitude, geohash, ema
         console.error('Data insert failed:', error);
     }
 }
+
+// register donor
+export const updateDonee = async (doneeId, doneeName, latitude, longitude, geohash, passwd) => {
+    try {
+
+        const responce = await axios.put(`${API_URL}/donee/${doneeId}`, { doneeName, latitude, longitude, geohash, passwd });
+        return responce
+
+    } catch (error) {
+        console.error('Data insert failed:', error);
+    }
+}

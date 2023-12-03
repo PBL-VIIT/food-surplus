@@ -3,8 +3,10 @@ import DashboardNav from '../../components/DashboardNav'
 import CustomeInput from '../../components/utility/CustomeInput'
 import MainButton from '../../components/utility/MainButton'
 import toast, { Toaster } from 'react-hot-toast';
-import { createNewDonation, getSingleDonation, updateDonation } from '../../api/donation';
+import { getSingleDonation, updateDonation } from '../../api/donation';
 import { useNavigate, useParams } from 'react-router-dom'
+import moment from 'moment';
+
 
 
 export default function UpdateDonation() {
@@ -42,8 +44,17 @@ export default function UpdateDonation() {
                 setDonationType(donationDetailsFetched.data?.donationType)
                 setNoOfDonations(donationDetailsFetched.data?.noOfDonations)
                 setDonationDescription(donationDetailsFetched.data?.donationDescription)
-                setDonationExpiry(donationDetailsFetched.data?.donationExpiry
-                )
+
+                const originalDateString = donationDetailsFetched?.data?.donationExpiry;
+
+                // Parse the original date string using moment
+                const originalDate = moment(originalDateString);
+
+                // Format the date in the desired format (yyyy-MM-dd)
+                const formattedDate = originalDate.format('YYYY-MM-DD');
+
+                setDonationExpiry(formattedDate)
+
                 setDonationPickupLatitude(donationDetailsFetched.data?.donationPickupLatitude)
                 setDonationPickupLongitude(donationDetailsFetched.data?.donationPickupLongitude)
                 setDonationPickupGeohash(donationDetailsFetched.data?.donationPickupGeohash)

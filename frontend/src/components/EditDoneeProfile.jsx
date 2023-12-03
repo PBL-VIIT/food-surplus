@@ -2,48 +2,45 @@ import React, { useEffect, useState } from 'react'
 import CustomeInput from '../components/utility/CustomeInput'
 import MainButton from '../components/utility/MainButton'
 import toast, { Toaster } from 'react-hot-toast'
-import { getSingleDonor, updateDonor } from '../api/donor'
+import { getSingleDonee, updateDonee } from '../api/donee'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
 
-export default function EditDonorProfile({ togglePages, setTogglePages }) {
+export default function EditDoneeProfile({ togglePages, setTogglePages }) {
 
-    const { donorId } = useParams()
+    const { doneeId } = useParams()
 
-    const [name, setName] = useState()
+    const [doneeName, setDoneeName] = useState()
     const [email, setEmail] = useState()
     const [passwd, setPasswd] = useState()
-    const [orgName, setOrgName] = useState()
-    // const [donorId, setDonorId] = useState()
+    // const [doneeId, setDonorId] = useState()
 
     const [latitude, setLatitude] = useState()
     const [longitude, setLongitude] = useState()
     const [geohash, setGeohash] = useState()
-    const [donorDetails, setDonorDetails] = useState()
+    const [doneeDetails, setDonorDetails] = useState()
 
     const navigate = useNavigate()
 
 
     useEffect(() => {
 
-        // const donorDetailsFetched = JSON.parse(localStorage.getItem('donor'))
+        // const doneeDetailsFetched = JSON.parse(localStorage.getItem('donee'))
 
 
         const getDonorData = async () => {
-            const donorDetailsFetched = await getSingleDonor(donorId)
-            console.log(donorDetailsFetched?.data);
-            // setDonorDetails(donorDetailsFetched?.donor);
+            const doneeDetailsFetched = await getSingleDonee(doneeId)
+            console.log(doneeDetailsFetched?.data);
+            // setDonorDetails(doneeDetailsFetched?.donee);
 
 
-            // setDonorId(donorDetailsFetched?.donor?.donorId)
-            setName(donorDetailsFetched?.data?.name)
-            setEmail(donorDetailsFetched?.data?.email)
-            setPasswd(donorDetailsFetched?.data?.passwd)
-            setOrgName(donorDetailsFetched?.data?.orgName)
-            setLatitude(donorDetailsFetched?.data?.latitude)
-            setLongitude(donorDetailsFetched?.data?.longitude)
-            setGeohash(donorDetailsFetched?.data?.geohash)
+            setDoneeName(doneeDetailsFetched?.data?.doneeName)
+            setEmail(doneeDetailsFetched?.data?.email)
+            setPasswd(doneeDetailsFetched?.data?.passwd)
+            setLatitude(doneeDetailsFetched?.data?.latitude)
+            setLongitude(doneeDetailsFetched?.data?.longitude)
+            setGeohash(doneeDetailsFetched?.data?.geohash)
 
         }
 
@@ -59,24 +56,24 @@ export default function EditDonorProfile({ togglePages, setTogglePages }) {
     const handleProfileUpdate = async () => {
 
 
-        if (!name || !email || !passwd || !orgName || !latitude || !longitude || !geohash) {
+        if (!doneeName || !email || !passwd || !latitude || !longitude || !geohash) {
             toast.error("Fields cannot be empty")
         }
         else {
             try {
-                let res = await updateDonor(
-                    donorId, name, orgName, latitude, longitude, geohash, passwd)
+                let res = await updateDonee(
+                    doneeId, doneeName, latitude, longitude, geohash, passwd)
 
                 if (res.status === 200) {
-                    toast.success("Donor Profile update successfully")
+                    toast.success("Donee Profile update successfully")
 
                     setTogglePages('viewProfile')
                 }
                 else {
-                    toast.error("Donor Profile updation failed")
+                    toast.error("Donee Profile updation failed")
                 }
             } catch (error) {
-                toast.error("Donor Profile updation failed ")
+                toast.error("Donee Profile updation failed ")
             }
         }
 
@@ -91,9 +88,8 @@ export default function EditDonorProfile({ togglePages, setTogglePages }) {
 
                 <button onClick={handleViewProfile} className="py-2 px-4 rounded-full bg-gray-200 border hover:bg-gray-100">Back</button>
 
-                <CustomeInput value={name} setValue={setName} placeholder={"Your Name"} id={"name"} type={"text"} />
+                <CustomeInput value={doneeName} setValue={setDoneeName} placeholder={"Your Name"} id={"name"} type={"text"} />
                 <CustomeInput value={email} setValue={setEmail} placeholder={"Your email"} id={"email"} type={"email"} />
-                <CustomeInput value={orgName} setValue={setOrgName} placeholder={"Your organization name"} id={"orgName"} type={"text"} />
 
                 <CustomeInput value={passwd} setValue={setPasswd} placeholder={"••••••••"} id={"password"} type={"password"} />
 
