@@ -11,6 +11,18 @@ export const getFeedbackByDonation = async (donationId) => {
         return responce
 
     } catch (error) {
-        console.error('Data fetching failed:', error);
+        console.error('Feedbacks fetching failed:', error);
+    }
+}
+
+// create feeback
+export const createFeedback = async (donationId, feedbackTitle, feedbackDescription, doneeId) => {
+    try {
+
+        const responce = await axios.post(`${API_URL}/feedback`, { donationId, feedbackTitle, feedbackDescription, doneeId });
+        return responce
+
+    } catch (error) {
+        console.error('Feedback Creating failed:', error);
     }
 }

@@ -4,10 +4,11 @@ import DashboardNav from '../../components/DashboardNav'
 import MainButton from '../../components/utility/MainButton'
 import ReviewCard from '../../components/ReviewCard'
 
+
 export default function DonorProfile() {
     return (
         <div >
-            <DashboardNav />
+            <DashboardNav user={"donor"} />
             <div className="px-16 py-10 pt-32 w-4/5">
                 <h1 className='font-semibold text-2xl'>Your Profile</h1>
                 <CustomeInput label={"email"} placeholder={"email"} type={"email"} />

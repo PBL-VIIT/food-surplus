@@ -23,7 +23,9 @@ export const loginDonor = async (email, passwd) => {
         return responce
 
     } catch (error) {
+
         console.error('Data fetching failed:', error);
+        return error
     }
 }
 

@@ -360,7 +360,7 @@ app.get('/api/donations/donor/:donorId', (req, res) => {
 // =========FEEDBACK API =============================
 
 // 1. Add Feedback
-app.post('/api/feedbacks', (req, res) => {
+app.post('/api/feedback', (req, res) => {
     const { donationId, feedbackTitle, feedbackDescription, doneeId } = req.body;
 
     const addFeedbackProcedure = 'CALL AddFeedback(?, ?, ?, ?)';
@@ -411,7 +411,7 @@ app.get('/api/feedbacks/:id', (req, res) => {
 // =========REVIEW API =============================
 
 // 1. Add Review
-app.post('/api/reviews', (req, res) => {
+app.post('/api/review', (req, res) => {
     const { doneeId, donorId, reviewTitle, reviewDescription, rating } = req.body;
 
     const addReviewProcedure = 'CALL AddReview(?, ?, ?, ?, ?)';

@@ -58,7 +58,7 @@ export default function NewDonation() {
 
     return (
         <div>
-            <DashboardNav />
+            <DashboardNav user={"donor"} />
             <Toaster />
             <div className="px-16 py-10 pt-32 w-4/5">
                 <h1 className='font-semibold text-2xl'>Create new donation</h1>

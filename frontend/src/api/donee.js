@@ -4,10 +4,10 @@ import { API_URL } from '../data/constants';
 
 
 // get single donations
-export const getSingleDonee = async (donorId) => {
+export const getSingleDonee = async (doneeId) => {
     try {
 
-        const responce = await axios.get(`${API_URL}/donees/${donorId}`);
+        const responce = await axios.get(`${API_URL}/donees/${doneeId}`);
         return responce
 
     } catch (error) {

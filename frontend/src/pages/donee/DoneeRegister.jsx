@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import CustomeInput from '../../components/utility/CustomeInput'
 import MainButton from '../../components/utility/MainButton'
 import toast, { Toaster } from 'react-hot-toast'
-import { registerDonee } from '../../api/donee'
+import { loginDonee, registerDonee } from '../../api/donee'
 import { useNavigate } from 'react-router-dom'
 
 
@@ -39,12 +39,15 @@ export default function DoneeRegister() {
             let res = await registerDonee(doneeName, latitude, longitude, geohash, email, passwd)
             try {
                 if (res.status === 201) {
-                    toast.success("Register sucessful")
+                    toast.success("Registered sucessfully")
+
+                    let res = await loginDonee(email, passwd)
 
                     localStorage.setItem('donee', JSON.stringify(res.data));
                     setTimeout(() => {
                         navigate("/donee/dashboard");
                     }, 2000);
+
                 }
                 console.log(res);
 

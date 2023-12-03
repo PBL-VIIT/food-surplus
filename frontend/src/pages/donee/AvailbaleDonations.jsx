@@ -5,7 +5,7 @@ import DashboardNav from '../../components/DashboardNav'
 export default function AvailbaleDonations() {
     return (
         <div>
-            <DashboardNav />
+            <DashboardNav user={"donee"} />
             <div className="px-16 py-10 pt-32">
 
                 <h1 className='text-3xl font-semibold'>Your Dry Fruits Donations</h1>

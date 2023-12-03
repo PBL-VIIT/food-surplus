@@ -25,7 +25,7 @@ export default function DoneeDashboard() {
     }, [])
     return (
         <div>
-            <DashboardNav />
+            <DashboardNav user={"donee"} />
             <div className="px-16 py-10 pt-32">
 
                 {/* 

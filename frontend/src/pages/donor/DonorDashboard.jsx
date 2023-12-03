@@ -10,6 +10,8 @@ import { useNavigate } from 'react-router-dom'
 export default function DonorDashboard() {
 
     const [allDonations, setAllDonations] = useState([])
+
+
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -38,7 +40,7 @@ export default function DonorDashboard() {
 
     return (
         <div>
-            <DashboardNav />
+            <DashboardNav user={"donor"} />
             <Toaster />
             <div className="px-16 py-10 pt-32">
                 <div className="flex justify-between">

@@ -14,3 +14,17 @@ export const getReviewsByDonorId = async (donorId) => {
     }
 }
 
+// get review with donor
+export const createNewReview = async (doneeId, donorId, reviewTitle, reviewDescription, rating) => {
+    try {
+
+        const responce = await axios.post(`${API_URL}/review`, {
+            doneeId, donorId, reviewTitle, reviewDescription, rating
+        });
+        return responce
+
+    } catch (error) {
+        console.error('Data fetching failed:', error);
+    }
+}
+
